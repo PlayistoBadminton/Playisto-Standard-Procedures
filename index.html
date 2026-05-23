@@ -134,6 +134,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       Coaching fee
       <i class="ti ti-chevron-right arr"></i>
     </button>
+    <button class="menu-btn" onclick="openSOP('sop_shuttle')">
+      <i class="ti ti-feather"></i>
+      Mavis 350 shuttle sale
+      <i class="ti ti-chevron-right arr"></i>
+    </button>
+    <button class="menu-btn" onclick="openSOP('sop_shuttlesale')">
+      <i class="ti ti-barcode"></i>
+      Shuttle sold — post-sale steps
+      <i class="ti ti-chevron-right arr"></i>
+    </button>
   </div>
 
   <!-- SOP 1: COURT BOOKING — PHONE -->
@@ -396,19 +406,96 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   </div>
 
+  <!-- SOP 3: MAVIS 350 SHUTTLE SALE -->
+  <div class="sop-screen" id="sop_shuttle">
+    <div class="sop-header">
+      <i class="ti ti-feather"></i>
+      <span class="title">Mavis 350 shuttle sale</span>
+      <span class="home-link" onclick="goHome('sop_shuttle')"><i class="ti ti-home"></i> Home</span>
+    </div>
+    <div class="trail" id="trail_shuttle"></div>
+
+    <div class="step-box active" id="sh_s1">
+      <div class="step-num">Step 1</div>
+      <div class="step-q">Is the customer a regular player at Playisto?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('sh','sh_s1','Yes — regular Playisto player','sh_ok')"><i class="ti ti-user-check"></i> Yes — regular Playisto player</button>
+        <button class="bar-btn" onclick="pick('sh','sh_s1','No — not a regular player','sh_lowstock')"><i class="ti ti-user-x"></i> No — not a regular player</button>
+      </div>
+    </div>
+
+    <div class="done-box" id="sh_ok">
+      <i class="ti ti-circle-check big"></i>
+      <div class="done-title">Barrel / Single sale OK</div>
+      <div class="done-sub">Customer is a regular Playisto player. Proceed with the sale — barrel or single tube as requested.</div>
+      <button class="restart-btn" onclick="restartSOP('sh','sop_shuttle')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('sh','sh_ok','sh_s1')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="unavail-box" id="sh_lowstock">
+      <i class="ti ti-alert-triangle big"></i>
+      <div class="unavail-title">Low stock — do not sell</div>
+      <div class="unavail-sub">Mavis 350 stock is reserved for regular Playisto players. Politely inform the customer that stock is currently unavailable for walk-in purchase.</div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('sh','sh_lowstock','sh_s1')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+  </div>
+
+  <!-- SOP 4: SHUTTLE SOLD — POST-SALE STEPS -->
+  <div class="sop-screen" id="sop_shuttlesale">
+    <div class="sop-header">
+      <i class="ti ti-barcode"></i>
+      <span class="title">Shuttle sold — post-sale steps</span>
+      <span class="home-link" onclick="goHome('sop_shuttlesale')"><i class="ti ti-home"></i> Home</span>
+    </div>
+    <div class="trail" id="trail_shuttlesale"></div>
+
+    <div class="step-box active" id="ss_s1">
+      <div class="step-num">Step 1</div>
+      <div class="step-q">Scan the barcode using StockCount app</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('ss','ss_s1','Barcode scanned','ss_s2')"><i class="ti ti-scan"></i> Barcode scanned — Yes</button>
+      </div>
+    </div>
+
+    <div class="step-box" id="ss_s2">
+      <div class="step-num">Step 2</div>
+      <div class="step-q">Make an entry in the account book</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('ss','ss_s2','Entry done','ss_done')"><i class="ti ti-notebook"></i> Entry done — Yes</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('ss','ss_s2','ss_s1')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="done-box" id="ss_done">
+      <i class="ti ti-circle-check big"></i>
+      <div class="done-title">Post-sale steps complete!</div>
+      <div class="done-sub">Shuttle sold, barcode scanned in StockCount, account book entry done.</div>
+      <button class="restart-btn" onclick="restartSOP('ss','sop_shuttlesale')"><i class="ti ti-refresh"></i> Start again</button>
+    </div>
+
+  </div>
+
 </div>
 </div>
 
 <script>
-const histories = { b: [], f: [] };
+const histories = { b: [], f: [], sh: [], ss: [] };
 
 function openSOP(sopId) {
   document.getElementById('home').style.display = 'none';
   document.getElementById(sopId).classList.add('active');
 }
 
+function sopPrefix(sopId) {
+  if (sopId === 'sop_booking') return 'b';
+  if (sopId === 'sop_fee') return 'f';
+  if (sopId === 'sop_shuttle') return 'sh';
+  return 'ss';
+}
+
 function goHome(sopId) {
-  const prefix = sopId === 'sop_booking' ? 'b' : 'f';
+  const prefix = sopPrefix(sopId);
   restartSOP(prefix, sopId);
   document.getElementById(sopId).classList.remove('active');
   document.getElementById('home').style.display = 'block';
@@ -434,7 +521,8 @@ function goBack(prefix, currentId, prevId) {
 }
 
 function updateTrail(prefix) {
-  const t = document.getElementById('trail_' + (prefix === 'b' ? 'booking' : 'fee'));
+  const map = { b: 'trail_booking', f: 'trail_fee', sh: 'trail_shuttle', ss: 'trail_shuttlesale' };
+  const t = document.getElementById(map[prefix]);
   t.innerHTML = histories[prefix].map(h =>
     '<div class="trail-item"><i class="ti ti-check"></i>' + h + '</div>'
   ).join('');
