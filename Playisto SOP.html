@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playisto SOP</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;min-height:100vh;padding:1.5rem 1rem}
+.container{max-width:480px;margin:0 auto}
+.card{background:#fff;border-radius:16px;padding:1.5rem;border:0.5px solid #e0e0d8}
+
+/* Header */
+.app-header{text-align:center;margin-bottom:1.75rem;padding-bottom:1.25rem;border-bottom:0.5px solid #eee}
+.app-logo{width:58px;height:58px;border-radius:14px;background:#1D9E75;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:30px;color:#fff}
+.app-title{font-size:20px;font-weight:500;color:#1a1a1a;margin-bottom:2px}
+.app-sub{font-size:15px;color:#888}
+
+/* Home screen */
+.home{display:block}
+.home-label{font-size:13px;font-weight:600;color:#0F6E56;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+.menu-btn{width:100%;padding:16px 18px;font-size:17px;font-weight:500;text-align:left;cursor:pointer;border-radius:12px;border:0.5px solid #d0d0c8;background:#fff;color:#1a1a1a;display:flex;align-items:center;gap:12px;margin-bottom:10px;transition:background 0.15s}
+.menu-btn:hover{background:#f0f0ea}
+.menu-btn i{font-size:23px;color:#1D9E75;flex-shrink:0}
+.menu-btn .arr{margin-left:auto;font-size:18px;color:#bbb}
+
+/* SOP screens */
+.sop-screen{display:none}
+.sop-screen.active{display:block}
+.sop-header{font-size:15px;font-weight:500;color:#888;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;padding-bottom:1rem;border-bottom:0.5px solid #eee}
+.sop-header i{font-size:18px;color:#1D9E75}
+.sop-header .title{color:#222;font-size:16px;flex:1}
+.home-link{font-size:14px;color:#1D9E75;cursor:pointer;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.home-link:hover{text-decoration:underline}
+
+/* Steps */
+.step-box{display:none}
+.step-box.active{display:block}
+.step-num{font-size:13px;font-weight:600;color:#0F6E56;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px}
+.step-q{font-size:19px;font-weight:500;color:#1a1a1a;margin-bottom:1rem;line-height:1.4}
+.btn-row{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.bar-btn{width:100%;padding:15px 18px;font-size:16px;font-weight:500;text-align:left;cursor:pointer;border-radius:10px;border:0.5px solid #d0d0c8;background:#fff;color:#1a1a1a;display:flex;align-items:center;gap:12px;transition:background 0.15s}
+.bar-btn:hover{background:#f0f0ea}
+.bar-btn.selected{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.bar-btn i{font-size:20px;color:#1D9E75;flex-shrink:0}
+.back-wrap{display:flex;justify-content:flex-end;margin-top:4px}
+.back-btn{padding:10px 18px;font-size:15px;cursor:pointer;border-radius:10px;border:0.5px solid #ddd;background:transparent;color:#888;display:inline-flex;align-items:center;gap:6px}
+.back-btn:hover{background:#f0f0ea}
+.back-btn i{font-size:16px}
+
+/* Trail */
+.trail{display:flex;flex-direction:column;gap:4px;margin-bottom:1rem}
+.trail-item{font-size:15px;color:#888;display:flex;align-items:center;gap:6px}
+.trail-item i{font-size:15px;color:#1D9E75}
+
+/* Done / Fee */
+.done-box{background:#E1F5EE;border-radius:12px;padding:1.5rem;text-align:center;display:none}
+.done-box.active{display:block}
+.done-box i.big{font-size:40px;color:#1D9E75;margin-bottom:10px;display:block}
+.done-title{font-size:19px;font-weight:500;color:#085041;margin-bottom:6px}
+.done-sub{font-size:15px;color:#0F6E56;margin-bottom:1.25rem;line-height:1.5}
+.fee-box{background:#E1F5EE;border-radius:12px;padding:1.5rem;text-align:center;display:none}
+.fee-box.active{display:block}
+.fee-label{font-size:15px;color:#0F6E56;margin-bottom:6px}
+.fee-amount{font-size:42px;font-weight:500;color:#085041;margin-bottom:4px}
+.fee-sub{font-size:15px;color:#0F6E56;margin-bottom:1.25rem}
+.restart-btn{padding:12px 22px;font-size:15px;font-weight:500;cursor:pointer;border-radius:10px;border:0.5px solid #1D9E75;background:transparent;color:#0F6E56}
+.restart-btn:hover{background:#d0f0e4}
+
+/* Unavail */
+.unavail-box{background:#FAEEDA;border-radius:12px;padding:1.25rem;display:none}
+.unavail-box.active{display:block}
+.unavail-box i.big{font-size:32px;color:#854F0B;margin-bottom:8px;display:block}
+.unavail-title{font-size:17px;font-weight:500;color:#633806;margin-bottom:4px}
+.unavail-sub{font-size:15px;color:#854F0B;margin-bottom:1rem;line-height:1.5}
+
+/* Mobile: bump sizes further on small screens */
+@media(max-width:480px){
+  body{padding:1rem 0.75rem}
+  .card{padding:1.25rem}
+  .app-logo{width:64px;height:64px;font-size:34px}
+  .app-title{font-size:22px}
+  .app-sub{font-size:16px}
+  .home-label{font-size:14px}
+  .menu-btn{padding:18px 18px;font-size:18px}
+  .menu-btn i{font-size:25px}
+  .menu-btn .arr{font-size:20px}
+  .sop-header{font-size:16px}
+  .sop-header i{font-size:20px}
+  .sop-header .title{font-size:17px}
+  .home-link{font-size:16px}
+  .step-num{font-size:14px}
+  .step-q{font-size:21px}
+  .bar-btn{padding:17px 18px;font-size:17px;gap:14px}
+  .bar-btn i{font-size:22px}
+  .back-btn{padding:12px 18px;font-size:16px}
+  .back-btn i{font-size:18px}
+  .trail-item{font-size:16px}
+  .trail-item i{font-size:16px}
+  .done-box i.big{font-size:44px}
+  .done-title{font-size:21px}
+  .done-sub{font-size:16px}
+  .fee-label{font-size:16px}
+  .fee-amount{font-size:48px}
+  .fee-sub{font-size:16px}
+  .restart-btn{font-size:16px;padding:13px 24px}
+  .unavail-box i.big{font-size:36px}
+  .unavail-title{font-size:19px}
+  .unavail-sub{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card">
+
+  <div class="app-header">
+    <div class="app-logo"><i class="ti ti-clipboard-list"></i></div>
+    <div class="app-title">Playisto SOP</div>
+    <div class="app-sub">Front desk training guide</div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="home" id="home">
+    <div class="home-label">Select a workflow</div>
+    <button class="menu-btn" onclick="openSOP('sop_booking')">
+      <i class="ti ti-phone"></i>
+      Court booking — phone
+      <i class="ti ti-chevron-right arr"></i>
+    </button>
+    <button class="menu-btn" onclick="openSOP('sop_fee')">
+      <i class="ti ti-school"></i>
+      Coaching fee
+      <i class="ti ti-chevron-right arr"></i>
+    </button>
+  </div>
+
+  <!-- SOP 1: COURT BOOKING — PHONE -->
+  <div class="sop-screen" id="sop_booking">
+    <div class="sop-header">
+      <i class="ti ti-phone"></i>
+      <span class="title">Court booking — phone</span>
+      <span class="home-link" onclick="goHome('sop_booking')"><i class="ti ti-home"></i> Home</span>
+    </div>
+    <div class="trail" id="trail_booking"></div>
+
+    <div class="step-box active" id="b_s1">
+      <div class="step-num">Step 1</div>
+      <div class="step-q">Check court availability in Playo app</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s1','Court available','b_s2')"><i class="ti ti-circle-check"></i> Court available</button>
+        <button class="bar-btn" onclick="pick('b','b_s1','Court not available','b_unavail')"><i class="ti ti-circle-x"></i> Court not available</button>
+      </div>
+    </div>
+
+    <div class="step-box" id="b_s2">
+      <div class="step-num">Step 2</div>
+      <div class="step-q">Share QR code and ask for advance payment (full court amount)</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s2','Payment received','b_s3')"><i class="ti ti-cash"></i> Payment received</button>
+        <button class="bar-btn" onclick="pick('b','b_s2','Customer not paying advance','b_unavail2')"><i class="ti ti-ban"></i> Customer not paying advance</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s2','b_s1')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="b_s3">
+      <div class="step-num">Step 3</div>
+      <div class="step-q">Reserve the court in Playo</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s3','Court reserved','b_s4')"><i class="ti ti-calendar-check"></i> Court reserved</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s3','b_s2')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="b_s4">
+      <div class="step-num">Step 4</div>
+      <div class="step-q">Make an entry in the account book</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s4','Entry done','b_s5')"><i class="ti ti-notebook"></i> Entry done</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s4','b_s3')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="b_s5">
+      <div class="step-num">Step 5</div>
+      <div class="step-q">Send screenshot of reservation to customer</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s5','Screenshot sent','b_s6')"><i class="ti ti-send"></i> Screenshot sent</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s5','b_s4')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="b_s6">
+      <div class="step-num">Step 6</div>
+      <div class="step-q">Send rules screenshot to customer</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s6','Rules sent','b_s7')"><i class="ti ti-send"></i> Rules sent</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s6','b_s5')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="b_s7">
+      <div class="step-num">Step 7</div>
+      <div class="step-q">5 minutes past booking time — has the customer arrived?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s7','Customer arrived','b_done')"><i class="ti ti-user-check"></i> Customer arrived</button>
+        <button class="bar-btn" onclick="pick('b','b_s7','Customer not yet arrived — call them','b_s8')"><i class="ti ti-phone-call"></i> Customer not yet arrived — call them</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s7','b_s6')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="b_s8">
+      <div class="step-num">Step 8</div>
+      <div class="step-q">Call the customer and check ETA</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s8','Customer on the way','b_done')"><i class="ti ti-walk"></i> Customer on the way</button>
+        <button class="bar-btn" onclick="pick('b','b_s8','Customer cancelling','b_s9')"><i class="ti ti-x"></i> Customer cancelling</button>
+        <button class="bar-btn" onclick="pick('b','b_s8','No answer','b_s9')"><i class="ti ti-phone-off"></i> No answer</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s8','b_s7')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="b_s9">
+      <div class="step-num">Step 9</div>
+      <div class="step-q">Inform manager and decide on court release</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('b','b_s9','Manager informed — court released','b_done')"><i class="ti ti-alert-circle"></i> Manager informed — court released</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_s9','b_s8')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="done-box" id="b_done">
+      <i class="ti ti-circle-check big"></i>
+      <div class="done-title">Booking flow complete!</div>
+      <div class="done-sub">Court booked, payment received, account entry done, reservation and rules sent, customer follow-up complete.</div>
+      <button class="restart-btn" onclick="restartSOP('b','sop_booking')"><i class="ti ti-refresh"></i> Start again</button>
+    </div>
+
+    <div class="unavail-box" id="b_unavail">
+      <i class="ti ti-alert-triangle big"></i>
+      <div class="unavail-title">Court not available</div>
+      <div class="unavail-sub">Inform the customer politely. Suggest a different time slot or date.</div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_unavail','b_s1')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="unavail-box" id="b_unavail2">
+      <i class="ti ti-alert-triangle big"></i>
+      <div class="unavail-title">No advance payment</div>
+      <div class="unavail-sub">Do not reserve the court without payment. Politely inform the customer the court cannot be held without advance.</div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('b','b_unavail2','b_s2')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+  </div>
+
+  <!-- SOP 2: COACHING FEE -->
+  <div class="sop-screen" id="sop_fee">
+    <div class="sop-header">
+      <i class="ti ti-school"></i>
+      <span class="title">Coaching fee</span>
+      <span class="home-link" onclick="goHome('sop_fee')"><i class="ti ti-home"></i> Home</span>
+    </div>
+    <div class="trail" id="trail_fee"></div>
+
+    <div class="step-box active" id="f_s1">
+      <div class="step-num">Step 1</div>
+      <div class="step-q">Is the student less than 18 years old?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('f','f_s1','Under 18','f_s2_u18')"><i class="ti ti-user"></i> Yes — under 18</button>
+        <button class="bar-btn" onclick="pick('f','f_s1','18 or above','f_s2_adult')"><i class="ti ti-user"></i> No — 18 or above</button>
+      </div>
+    </div>
+
+    <div class="step-box" id="f_s2_u18">
+      <div class="step-num">Step 2</div>
+      <div class="step-q">Which days?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('f','f_s2_u18','Mon to Fri','f_s3_u18_mf')"><i class="ti ti-calendar"></i> Mon to Fri</button>
+        <button class="bar-btn" onclick="pick('f','f_s2_u18','Mon to Sat','f_s3_u18_ms')"><i class="ti ti-calendar"></i> Mon to Sat</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('f','f_s2_u18','f_s1')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="f_s2_adult">
+      <div class="step-num">Step 2</div>
+      <div class="step-q">Which days?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('f','f_s2_adult','Mon to Fri','f_s3_adult_mf')"><i class="ti ti-calendar"></i> Mon to Fri</button>
+        <button class="bar-btn" onclick="pick('f','f_s2_adult','Mon to Sat','f_s3_adult_ms')"><i class="ti ti-calendar"></i> Mon to Sat</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('f','f_s2_adult','f_s1')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="f_s3_u18_mf">
+      <div class="step-num">Step 3</div>
+      <div class="step-q">How many hours per day?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('f','f_s3_u18_mf','1 hour/day','f_fee_u18_mf_1hr')"><i class="ti ti-clock"></i> 1 hour</button>
+        <button class="bar-btn" onclick="pick('f','f_s3_u18_mf','1.5 hours/day','f_fee_u18_mf_1_5hr')"><i class="ti ti-clock"></i> 1.5 hours</button>
+        <button class="bar-btn" onclick="pick('f','f_s3_u18_mf','2 hours/day','f_fee_u18_mf_2hr')"><i class="ti ti-clock"></i> 2 hours</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('f','f_s3_u18_mf','f_s2_u18')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="f_s3_u18_ms">
+      <div class="step-num">Step 3</div>
+      <div class="step-q">How many hours per day?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('f','f_s3_u18_ms','1 hour/day','f_fee_u18_ms_1hr')"><i class="ti ti-clock"></i> 1 hour</button>
+        <button class="bar-btn" onclick="pick('f','f_s3_u18_ms','1.5 hours/day','f_fee_u18_ms_1_5hr')"><i class="ti ti-clock"></i> 1.5 hours</button>
+        <button class="bar-btn" onclick="pick('f','f_s3_u18_ms','2 hours/day','f_fee_u18_ms_2hr')"><i class="ti ti-clock"></i> 2 hours</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('f','f_s3_u18_ms','f_s2_u18')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="f_s3_adult_mf">
+      <div class="step-num">Step 3</div>
+      <div class="step-q">How many hours per day?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('f','f_s3_adult_mf','1 hour/day','f_fee_adult_mf_1hr')"><i class="ti ti-clock"></i> 1 hour</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('f','f_s3_adult_mf','f_s2_adult')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="step-box" id="f_s3_adult_ms">
+      <div class="step-num">Step 3</div>
+      <div class="step-q">How many hours per day?</div>
+      <div class="btn-row">
+        <button class="bar-btn" onclick="pick('f','f_s3_adult_ms','1 hour/day','f_fee_adult_ms_1hr')"><i class="ti ti-clock"></i> 1 hour</button>
+      </div>
+      <div class="back-wrap"><button class="back-btn" onclick="goBack('f','f_s3_adult_ms','f_s2_adult')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_u18_mf_1hr">
+      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 1 hr/day</div>
+      <div class="fee-amount">₹3,000</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_u18_mf_1hr','f_s3_u18_mf')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_u18_mf_1_5hr">
+      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 1.5 hr/day</div>
+      <div class="fee-amount">₹4,500</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_u18_mf_1_5hr','f_s3_u18_mf')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_u18_mf_2hr">
+      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 2 hr/day</div>
+      <div class="fee-amount">₹6,300</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_u18_mf_2hr','f_s3_u18_mf')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_u18_ms_1hr">
+      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 1 hr/day</div>
+      <div class="fee-amount">₹3,400</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_u18_ms_1hr','f_s3_u18_ms')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_u18_ms_1_5hr">
+      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 1.5 hr/day</div>
+      <div class="fee-amount">₹5,300</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_u18_ms_1_5hr','f_s3_u18_ms')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_u18_ms_2hr">
+      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 2 hr/day</div>
+      <div class="fee-amount">₹6,900</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_u18_ms_2hr','f_s3_u18_ms')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_adult_mf_1hr">
+      <div class="fee-label">18 or above &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 1 hr/day</div>
+      <div class="fee-amount">₹3,400</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_adult_mf_1hr','f_s3_adult_mf')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="fee-box" id="f_fee_adult_ms_1hr">
+      <div class="fee-label">18 or above &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 1 hr/day</div>
+      <div class="fee-amount">₹3,800</div>
+      <div class="fee-sub">per month</div>
+      <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
+      <div class="back-wrap" style="justify-content:center;margin-top:10px"><button class="back-btn" onclick="goBack('f','f_fee_adult_ms_1hr','f_s3_adult_ms')"><i class="ti ti-arrow-left"></i> Back</button></div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+const histories = { b: [], f: [] };
+
+function openSOP(sopId) {
+  document.getElementById('home').style.display = 'none';
+  document.getElementById(sopId).classList.add('active');
+}
+
+function goHome(sopId) {
+  const prefix = sopId === 'sop_booking' ? 'b' : 'f';
+  restartSOP(prefix, sopId);
+  document.getElementById(sopId).classList.remove('active');
+  document.getElementById('home').style.display = 'block';
+}
+
+function pick(prefix, fromStep, label, nextId) {
+  const btn = event.currentTarget;
+  btn.classList.add('selected');
+  histories[prefix].push(label);
+  updateTrail(prefix);
+  setTimeout(() => {
+    document.getElementById(fromStep).classList.remove('active');
+    document.getElementById(nextId).classList.add('active');
+  }, 200);
+}
+
+function goBack(prefix, currentId, prevId) {
+  histories[prefix].pop();
+  updateTrail(prefix);
+  document.getElementById(currentId).classList.remove('active');
+  document.querySelectorAll('#' + prevId + ' .bar-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById(prevId).classList.add('active');
+}
+
+function updateTrail(prefix) {
+  const t = document.getElementById('trail_' + (prefix === 'b' ? 'booking' : 'fee'));
+  t.innerHTML = histories[prefix].map(h =>
+    '<div class="trail-item"><i class="ti ti-check"></i>' + h + '</div>'
+  ).join('');
+}
+
+function restartSOP(prefix, sopId) {
+  histories[prefix] = [];
+  updateTrail(prefix);
+  const screen = document.getElementById(sopId);
+  screen.querySelectorAll('.step-box,.done-box,.fee-box,.unavail-box').forEach(el => el.classList.remove('active'));
+  screen.querySelectorAll('.bar-btn').forEach(b => b.classList.remove('selected'));
+  screen.querySelector('.step-box').classList.add('active');
+}
+</script>
+</body>
+</html>
