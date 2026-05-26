@@ -144,6 +144,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       Shuttle sold — post-sale steps
       <i class="ti ti-chevron-right arr"></i>
     </button>
+    <button class="menu-btn" onclick="openSOP('sop_prorate')">
+      <i class="ti ti-calculator"></i>
+      Prorated fee calculator
+      <i class="ti ti-chevron-right arr"></i>
+    </button>
   </div>
 
   <!-- SOP 1: COURT BOOKING — PHONE -->
@@ -476,11 +481,115 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   </div>
 
+  <!-- SOP 5: PRORATED FEE CALCULATOR -->
+  <div class="sop-screen" id="sop_prorate">
+    <div class="sop-header">
+      <i class="ti ti-calculator"></i>
+      <span class="title">Prorated fee calculator</span>
+      <span class="home-link" onclick="goHome('sop_prorate')"><i class="ti ti-home"></i> Home</span>
+    </div>
+
+    <style>
+      .pr-field { margin-bottom: 14px; }
+      .pr-label { font-size: 13px; font-weight: 600; color: #0F6E56; margin-bottom: 5px; display: block; }
+      .pr-input {
+        width: 100%; padding: 11px 13px; border: 0.5px solid #d0d0c8; border-radius: 10px;
+        font-size: 16px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none;
+        transition: border-color 0.15s;
+      }
+      .pr-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.1); }
+      .pr-select {
+        width: 100%; padding: 11px 13px; border: 0.5px solid #d0d0c8; border-radius: 10px;
+        font-size: 16px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none;
+        -webkit-appearance: none; appearance: none; cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230F6E56' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 13px center;
+      }
+      .pr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .pr-hint { font-size: 11.5px; color: #999; margin-top: 4px; font-style: italic; }
+      .pr-error { background: #fdf0ee; border: 0.5px solid #f1a89d; border-radius: 8px; padding: 10px 13px; font-size: 13px; color: #c0392b; margin-bottom: 12px; display: none; }
+      .pr-error.show { display: block; }
+      .pr-result {
+        background: #1D9E75; border-radius: 14px; padding: 20px; text-align: center; margin-top: 4px;
+      }
+      .pr-result-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 4px; letter-spacing: 0.04em; }
+      .pr-result-amt { font-size: 44px; font-weight: 500; color: #fff; line-height: 1; margin-bottom: 4px; }
+      .pr-result-fraction { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 14px; }
+      .pr-chips { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; }
+      .pr-chip { background: rgba(255,255,255,0.18); border-radius: 6px; padding: 5px 11px; font-size: 12px; color: rgba(255,255,255,0.9); }
+      .pr-chip span { color: rgba(255,255,255,0.6); margin-right: 3px; }
+      .pr-breakdown { margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; text-align: left; }
+      .pr-brow { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px dashed rgba(255,255,255,0.15); }
+      .pr-brow:last-child { border-bottom: none; }
+      .pr-bkey { color: rgba(255,255,255,0.65); }
+      .pr-bval { color: #fff; font-weight: 500; font-variant-numeric: tabular-nums; }
+      .pr-reset { margin-top: 14px; padding: 10px 20px; font-size: 15px; font-weight: 500; cursor: pointer; border-radius: 10px; border: 0.5px solid rgba(255,255,255,0.5); background: transparent; color: #fff; display: inline-flex; align-items: center; gap: 6px; }
+      .pr-reset:hover { background: rgba(255,255,255,0.15); }
+    </style>
+
+    <div style="padding-bottom:8px">
+
+      <div class="pr-field">
+        <label class="pr-label">Format</label>
+        <select class="pr-select" id="pr_format">
+          <option value="mf">Mon to Fri (5 days/week)</option>
+          <option value="ms">Mon to Sat (6 days/week)</option>
+        </select>
+      </div>
+
+      <div class="pr-field">
+        <label class="pr-label">Month &amp; Year</label>
+        <input type="date" class="pr-input" id="pr_month" />
+        <div class="pr-hint">Pick any date — Start &amp; End will auto-fill</div>
+      </div>
+
+      <div class="pr-row">
+        <div class="pr-field">
+          <label class="pr-label">Start Date</label>
+          <input type="date" class="pr-input" id="pr_start" />
+        </div>
+        <div class="pr-field">
+          <label class="pr-label">End Date</label>
+          <input type="date" class="pr-input" id="pr_end" />
+          <div class="pr-hint">Blank = month end</div>
+        </div>
+      </div>
+
+      <div class="pr-field">
+        <label class="pr-label">Full Month Fee (₹)</label>
+        <input type="number" class="pr-input" id="pr_fee" value="4000" min="0" step="100" />
+      </div>
+
+      <div class="pr-error" id="pr_error"></div>
+
+      <div class="pr-result" id="pr_result">
+        <div class="pr-result-label">Prorated Fee</div>
+        <div class="pr-result-amt" id="pr_amt">₹—</div>
+        <div class="pr-result-fraction" id="pr_frac">—</div>
+        <div class="pr-chips">
+          <div class="pr-chip"><span>Month days:</span><strong id="pr_total">—</strong></div>
+          <div class="pr-chip"><span>Eligible:</span><strong id="pr_elig">—</strong></div>
+        </div>
+        <div class="pr-breakdown">
+          <div class="pr-brow"><span class="pr-bkey">Month</span><span class="pr-bval" id="pr_b_month">—</span></div>
+          <div class="pr-brow"><span class="pr-bkey">Start Date</span><span class="pr-bval" id="pr_b_start">—</span></div>
+          <div class="pr-brow"><span class="pr-bkey">End Date (effective)</span><span class="pr-bval" id="pr_b_end">—</span></div>
+          <div class="pr-brow"><span class="pr-bkey">Full Month Working Days</span><span class="pr-bval" id="pr_b_full">—</span></div>
+          <div class="pr-brow"><span class="pr-bkey">Eligible Working Days</span><span class="pr-bval" id="pr_b_elig">—</span></div>
+          <div class="pr-brow"><span class="pr-bkey">Prorate Fraction</span><span class="pr-bval" id="pr_b_frac">—</span></div>
+          <div class="pr-brow"><span class="pr-bkey">Full Month Fee</span><span class="pr-bval" id="pr_b_fee">—</span></div>
+        </div>
+        <button class="pr-reset" onclick="prReset()"><i class="ti ti-refresh"></i> Reset</button>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 </div>
 
 <script>
-const histories = { b: [], f: [], sh: [], ss: [] };
+const histories = { b: [], f: [], sh: [], ss: [], pr: [] };
 
 function openSOP(sopId) {
   document.getElementById('home').style.display = 'none';
@@ -491,12 +600,13 @@ function sopPrefix(sopId) {
   if (sopId === 'sop_booking') return 'b';
   if (sopId === 'sop_fee') return 'f';
   if (sopId === 'sop_shuttle') return 'sh';
-  return 'ss';
+  if (sopId === 'sop_shuttlesale') return 'ss';
+  return 'pr';
 }
 
 function goHome(sopId) {
   const prefix = sopPrefix(sopId);
-  restartSOP(prefix, sopId);
+  if (sopId !== 'sop_prorate') restartSOP(prefix, sopId);
   document.getElementById(sopId).classList.remove('active');
   document.getElementById('home').style.display = 'block';
 }
@@ -522,6 +632,7 @@ function goBack(prefix, currentId, prevId) {
 
 function updateTrail(prefix) {
   const map = { b: 'trail_booking', f: 'trail_fee', sh: 'trail_shuttle', ss: 'trail_shuttlesale' };
+  if (!map[prefix]) return;
   const t = document.getElementById(map[prefix]);
   t.innerHTML = histories[prefix].map(h =>
     '<div class="trail-item"><i class="ti ti-check"></i>' + h + '</div>'
@@ -531,11 +642,116 @@ function updateTrail(prefix) {
 function restartSOP(prefix, sopId) {
   histories[prefix] = [];
   updateTrail(prefix);
+  if (sopId === 'sop_prorate') return;
   const screen = document.getElementById(sopId);
   screen.querySelectorAll('.step-box,.done-box,.fee-box,.unavail-box').forEach(el => el.classList.remove('active'));
   screen.querySelectorAll('.bar-btn').forEach(b => b.classList.remove('selected'));
   screen.querySelector('.step-box').classList.add('active');
 }
+// ── Prorated Fee Calculator ──────────────────────────────
+function prCountDays(start, end, monSat) {
+  let count = 0, d = new Date(start);
+  while (d <= end) {
+    const dow = d.getDay();
+    if (monSat ? dow !== 0 : (dow !== 0 && dow !== 6)) count++;
+    d.setDate(d.getDate() + 1);
+  }
+  return count;
+}
+function prFmt(d) {
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function prFmtMonth(d) {
+  return d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+}
+function prFmtRs(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+function prCalc() {
+  const errEl = document.getElementById('pr_error');
+  errEl.className = 'pr-error';
+
+  const fmtVal = document.getElementById('pr_format').value;
+  const monthVal = document.getElementById('pr_month').value;
+  const startVal = document.getElementById('pr_start').value;
+  const endVal = document.getElementById('pr_end').value;
+  const feeVal = parseFloat(document.getElementById('pr_fee').value);
+
+  if (!monthVal || !startVal || isNaN(feeVal) || feeVal <= 0) { prReset(); return; }
+
+  const monSat = fmtVal === 'ms';
+  const picked = new Date(monthVal + 'T00:00:00');
+  const monthStart = new Date(picked.getFullYear(), picked.getMonth(), 1);
+  const monthEnd = new Date(picked.getFullYear(), picked.getMonth() + 1, 0);
+  const startDate = new Date(startVal + 'T00:00:00');
+  const endDate = endVal ? new Date(endVal + 'T00:00:00') : monthEnd;
+
+  if (startDate < monthStart || startDate > monthEnd) {
+    errEl.textContent = '⚠ Start Date must be within the selected month.';
+    errEl.className = 'pr-error show'; prReset(); return;
+  }
+  if (endDate < startDate) {
+    errEl.textContent = '⚠ End Date cannot be before Start Date.';
+    errEl.className = 'pr-error show'; prReset(); return;
+  }
+  const diffDays = Math.round((endDate - startDate) / 86400000);
+  if (diffDays < 14) {
+    errEl.textContent = '⚠ Start and End Date must be at least 15 consecutive days apart.';
+    errEl.className = 'pr-error show'; prReset(); return;
+  }
+
+  const totalDays = prCountDays(monthStart, monthEnd, monSat);
+  const eligDays = prCountDays(startDate, endDate, monSat);
+  const fraction = totalDays > 0 ? eligDays / totalDays : 0;
+  const prorated = Math.round(feeVal * fraction);
+
+  document.getElementById('pr_amt').textContent = prFmtRs(prorated);
+  document.getElementById('pr_frac').textContent = eligDays + '/' + totalDays + ' working days × ' + prFmtRs(feeVal);
+  document.getElementById('pr_total').textContent = totalDays;
+  document.getElementById('pr_elig').textContent = eligDays;
+  document.getElementById('pr_b_month').textContent = prFmtMonth(monthStart);
+  document.getElementById('pr_b_start').textContent = prFmt(startDate);
+  document.getElementById('pr_b_end').textContent = prFmt(endDate);
+  document.getElementById('pr_b_full').textContent = totalDays + ' days';
+  document.getElementById('pr_b_elig').textContent = eligDays + ' days';
+  document.getElementById('pr_b_frac').textContent = fraction.toFixed(3) + ' (' + eligDays + '/' + totalDays + ')';
+  document.getElementById('pr_b_fee').textContent = prFmtRs(feeVal);
+}
+
+function prReset() {
+  ['pr_amt','pr_frac','pr_total','pr_elig','pr_b_month','pr_b_start',
+   'pr_b_end','pr_b_full','pr_b_elig','pr_b_frac','pr_b_fee'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+}
+
+document.getElementById('pr_month').addEventListener('change', function() {
+  const val = this.value;
+  if (!val) return;
+  const p = new Date(val + 'T00:00:00');
+  const y = p.getFullYear(), m = p.getMonth();
+  const last = new Date(y, m + 1, 0);
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('pr_start').value = y + '-' + pad(m+1) + '-01';
+  document.getElementById('pr_end').value = y + '-' + pad(m+1) + '-' + pad(last.getDate());
+  prCalc();
+});
+
+['pr_format','pr_month','pr_start','pr_end','pr_fee'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('change', prCalc);
+  el.addEventListener('input', prCalc);
+});
+
+// Init prorate defaults on load
+(function() {
+  const t = new Date();
+  const y = t.getFullYear(), m = String(t.getMonth()+1).padStart(2,'0');
+  const last = new Date(t.getFullYear(), t.getMonth()+1, 0).getDate();
+  document.getElementById('pr_month').value = y + '-' + m + '-01';
+  document.getElementById('pr_start').value = y + '-' + m + '-01';
+  document.getElementById('pr_end').value = y + '-' + m + '-' + String(last).padStart(2,'0');
+  prCalc();
+})();
 </script>
 </body>
 </html>
