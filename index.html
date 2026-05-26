@@ -346,7 +346,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <div class="fee-box" id="f_fee_u18_mf_1hr">
-      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 1 hr/day</div>
+      <div class="fee-label">Non-Adult &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 1 hr/day</div>
       <div class="fee-amount">₹3,000</div>
       <div class="fee-sub">per month</div>
       <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
@@ -354,7 +354,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <div class="fee-box" id="f_fee_u18_mf_1_5hr">
-      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 1.5 hr/day</div>
+      <div class="fee-label">Non-Adult &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 1.5 hr/day</div>
       <div class="fee-amount">₹4,500</div>
       <div class="fee-sub">per month</div>
       <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
@@ -362,7 +362,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <div class="fee-box" id="f_fee_u18_mf_2hr">
-      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 2 hr/day</div>
+      <div class="fee-label">Non-Adult &nbsp;·&nbsp; Mon–Fri &nbsp;·&nbsp; 2 hr/day</div>
       <div class="fee-amount">₹6,300</div>
       <div class="fee-sub">per month</div>
       <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
@@ -370,7 +370,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <div class="fee-box" id="f_fee_u18_ms_1hr">
-      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 1 hr/day</div>
+      <div class="fee-label">Non-Adult &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 1 hr/day</div>
       <div class="fee-amount">₹3,400</div>
       <div class="fee-sub">per month</div>
       <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
@@ -378,7 +378,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <div class="fee-box" id="f_fee_u18_ms_1_5hr">
-      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 1.5 hr/day</div>
+      <div class="fee-label">Non-Adult &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 1.5 hr/day</div>
       <div class="fee-amount">₹5,300</div>
       <div class="fee-sub">per month</div>
       <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
@@ -386,7 +386,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <div class="fee-box" id="f_fee_u18_ms_2hr">
-      <div class="fee-label">Under 18 &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 2 hr/day</div>
+      <div class="fee-label">Non-Adult &nbsp;·&nbsp; Mon–Sat &nbsp;·&nbsp; 2 hr/day</div>
       <div class="fee-amount">₹6,900</div>
       <div class="fee-sub">per month</div>
       <button class="restart-btn" onclick="restartSOP('f','sop_fee')"><i class="ti ti-refresh"></i> Start again</button>
@@ -532,8 +532,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="pr-field">
         <label class="pr-label">Format</label>
         <select class="pr-select" id="pr_format">
-          <option value="mf">Mon to Fri (5 days/week)</option>
-          <option value="ms">Mon to Sat (6 days/week)</option>
+          <optgroup label="Non-Adult · Mon–Fri">
+            <option value="mf|3000">Non-Adult · Mon–Fri · 1 hr/day</option>
+            <option value="mf|4500">Non-Adult · Mon–Fri · 1.5 hr/day</option>
+            <option value="mf|6300">Non-Adult · Mon–Fri · 2 hr/day</option>
+          </optgroup>
+          <optgroup label="Non-Adult · Mon–Sat">
+            <option value="ms|3400">Non-Adult · Mon–Sat · 1 hr/day</option>
+            <option value="ms|5300">Non-Adult · Mon–Sat · 1.5 hr/day</option>
+            <option value="ms|6900">Non-Adult · Mon–Sat · 2 hr/day</option>
+          </optgroup>
+          <optgroup label="18 or above">
+            <option value="mf|3400">18 or above · Mon–Fri · 1 hr/day</option>
+            <option value="ms|3800">18 or above · Mon–Sat · 1 hr/day</option>
+          </optgroup>
         </select>
       </div>
 
@@ -557,7 +569,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
       <div class="pr-field">
         <label class="pr-label">Full Month Fee (₹)</label>
-        <input type="number" class="pr-input" id="pr_fee" value="4000" min="0" step="100" />
+        <input type="number" class="pr-input" id="pr_fee" value="3000" min="0" step="100" style="background:#f5f5f0;color:#0F6E56;font-weight:500;" />
+        <div class="pr-hint">Auto-filled from Format · Edit only if overriding</div>
       </div>
 
       <div class="pr-error" id="pr_error"></div>
@@ -670,7 +683,8 @@ function prCalc() {
   const errEl = document.getElementById('pr_error');
   errEl.className = 'pr-error';
 
-  const fmtVal = document.getElementById('pr_format').value;
+  const fmtParts = document.getElementById('pr_format').value.split('|');
+  const fmtVal = fmtParts[0];  // 'mf' or 'ms'
   const monthVal = document.getElementById('pr_month').value;
   const startVal = document.getElementById('pr_start').value;
   const endVal = document.getElementById('pr_end').value;
@@ -724,6 +738,14 @@ function prReset() {
   });
 }
 
+document.getElementById('pr_format').addEventListener('change', function() {
+  const parts = this.value.split('|');
+  if (parts[1]) {
+    document.getElementById('pr_fee').value = parts[1];
+  }
+  prCalc();
+});
+
 document.getElementById('pr_month').addEventListener('change', function() {
   const val = this.value;
   if (!val) return;
@@ -736,7 +758,7 @@ document.getElementById('pr_month').addEventListener('change', function() {
   prCalc();
 });
 
-['pr_format','pr_month','pr_start','pr_end','pr_fee'].forEach(id => {
+['pr_month','pr_start','pr_end','pr_fee'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('change', prCalc);
   el.addEventListener('input', prCalc);
@@ -744,6 +766,9 @@ document.getElementById('pr_month').addEventListener('change', function() {
 
 // Init prorate defaults on load
 (function() {
+  // Set fee from default format
+  const defaultParts = document.getElementById('pr_format').value.split('|');
+  if (defaultParts[1]) document.getElementById('pr_fee').value = defaultParts[1];
   const t = new Date();
   const y = t.getFullYear(), m = String(t.getMonth()+1).padStart(2,'0');
   const last = new Date(t.getFullYear(), t.getMonth()+1, 0).getDate();
