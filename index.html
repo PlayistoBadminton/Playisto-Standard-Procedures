@@ -4,7 +4,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playisto SOP</title>
-<link rel="stylesheet" href="./Playisto SOP_files/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;min-height:100vh;padding:1.5rem 1rem}
@@ -152,6 +152,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="menu-btn" onclick="openSOP(&#39;sop_tasks&#39;)">
       <i class="ti ti-bell-ringing"></i>
       Critical tasks
+      <i class="ti ti-chevron-right arr"></i>
+    </button>
+    <button class="menu-btn" onclick="openSOP(&#39;sop_messages&#39;)">
+      <i class="ti ti-message-2"></i>
+      Messages
       <i class="ti ti-chevron-right arr"></i>
     </button>
   </div>
@@ -603,6 +608,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
+  <!-- MESSAGES SCREEN — inside card -->
+  <div class="sop-screen" id="sop_messages">
+    <div class="sop-header">
+      <i class="ti ti-message-2"></i>
+      <span class="title" id="msg_header_title">Messages</span>
+      <span class="home-link" onclick="goHome('sop_messages')"><i class="ti ti-home"></i> Home</span>
+    </div>
+    <div class="msg-type-screen" id="msg_type_screen">
+      <div class="home-label">Select message type</div>
+      <button class="menu-btn" onclick="openMsgDetail('msg_txn_tracking')">
+        <i class="ti ti-receipt"></i>
+        Transaction tracking
+        <i class="ti ti-chevron-right arr"></i>
+      </button>
+    </div>
+    <div class="msg-detail-screen" id="msg_txn_tracking">
+      <div class="back-wrap" style="margin-bottom:1rem;">
+        <button class="back-btn" onclick="closeMsgDetail('msg_txn_tracking')">
+          <i class="ti ti-arrow-left"></i> Back
+        </button>
+      </div>
+      <div class="msg-label">Message template</div>
+      <div class="msg-note" style="text-align:left; margin-bottom:12px; margin-top:0; color:#0F6E56; font-weight:700; font-size:16px;">📌 Send this message on the next day of transaction if it is still unpaid.</div>
+      <div class="msg-bubble" id="msg_txn_text">Hi Sir/Madam,
+
+This message is for tracking purpose.
+
+Date: [DATE]
+Item: [ITEM & QTY]
+Amount pending: ₹[AMOUNT]
+
+Thank you
+— Playisto</div>
+      <button class="msg-copy-btn" onclick="copyMsg()">
+        <i class="ti ti-copy"></i> Copy message
+      </button>
+      <div class="msg-copied" id="msg_copied">✓ Copied — paste in WhatsApp</div>
+      <p class="msg-note">Fill in [DATE], [ITEM & QTY] and [AMOUNT] before sending.<br>Send within 24 hrs of the transaction.</p>
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -624,7 +670,13 @@ function sopPrefix(sopId) {
 
 function goHome(sopId) {
   const prefix = sopPrefix(sopId);
-  if (sopId !== 'sop_prorate' && sopId !== 'sop_tasks') restartSOP(prefix, sopId);
+  if (sopId !== 'sop_prorate' && sopId !== 'sop_tasks' && sopId !== 'sop_messages') restartSOP(prefix, sopId);
+  if (sopId === 'sop_messages') {
+    document.getElementById('msg_type_screen').classList.remove('hidden');
+    document.querySelectorAll('.msg-detail-screen').forEach(el => el.classList.remove('active'));
+    document.getElementById('msg_header_title').textContent = 'Messages';
+    document.getElementById('msg_copied').classList.remove('show');
+  }
   document.getElementById(sopId).classList.remove('active');
   document.getElementById('home').style.display = 'block';
 }
@@ -1127,6 +1179,83 @@ const CT_EXCEL_URL = "https://playistobadminton.github.io/Playisto-Standard-Proc
     contentEl.appendChild(wrap);
   }
 })();
+</script>
+
+
+<!-- ═══════════════════════════════════════════
+     MESSAGES SCREEN
+════════════════════════════════════════════ -->
+<style>
+  #sop_messages { display: none; }
+  #sop_messages.active { display: block; }
+  .msg-type-screen.hidden { display: none; }
+  .msg-detail-screen { display: none; }
+  .msg-detail-screen.active { display: block; }
+  .msg-bubble {
+    background: #f0f7f4;
+    border: 1px solid #b8ddd0;
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 15px;
+    color: #1a2e44;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin-bottom: 16px;
+    max-width: 100%;
+  }
+  .msg-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0F6E56;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .msg-copy-btn {
+    width: 100%;
+    padding: 13px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 10px;
+    border: 0.5px solid #1D9E75;
+    background: transparent;
+    color: #0F6E56;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    transition: background 0.15s;
+    box-sizing: border-box;
+  }
+  .msg-copy-btn:hover { background: #d0f0e4; }
+  .msg-copy-btn i { font-size: 18px; }
+  .msg-copied { text-align: center; font-size: 13px; color: #1D9E75; font-weight: 600; margin-top: 4px; display: none; }
+  .msg-copied.show { display: block; }
+  .msg-note { font-size: 13px; color: #888; margin-top: 12px; line-height: 1.5; text-align: center; }
+</style>
+
+<script>
+function openMsgDetail(id) {
+  document.getElementById('msg_type_screen').classList.add('hidden');
+  document.getElementById(id).classList.add('active');
+  document.getElementById('msg_header_title').textContent = 'Transaction tracking';
+}
+function closeMsgDetail(id) {
+  document.getElementById(id).classList.remove('active');
+  document.getElementById('msg_type_screen').classList.remove('hidden');
+  document.getElementById('msg_header_title').textContent = 'Messages';
+  document.getElementById('msg_copied').classList.remove('show');
+}
+function copyMsg() {
+  const text = document.getElementById('msg_txn_text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('msg_copied');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3000);
+  });
+}
 </script>
 
 </body></html>
