@@ -802,45 +802,42 @@ document.getElementById('pr_month').addEventListener('change', function() {
   }
 
   /* Scroll horizontally on mobile, wrap on desktop */
-  .ct-names-row {
+  .ct-grid {
     display: flex;
-    gap: 24px;
-    justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 12px;
-  }
-  .ct-circles-row {
-    display: flex;
-    gap: 24px;
+    gap: 32px 24px;
     justify-content: center;
-    flex-wrap: wrap;
-    align-items: flex-start;
   }
 
-  .ct-name-cell {
+  .ct-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 150px;
-    text-align: center;
   }
+
+  .ct-name-cell { display: none; }
+  .ct-names-row { display: none; }
+  .ct-circles-row { display: none; }
+
   .ct-task-date {
     font-size: 11px;
     font-weight: 600;
     color: #2e7dce;
     margin-bottom: 3px;
     letter-spacing: 0.3px;
+    text-align: center;
   }
   .ct-assignee {
     font-size: 16px;
     font-weight: 800;
     color: #1a2e44;
     text-transform: capitalize;
+    text-align: center;
+    margin-bottom: 10px;
   }
 
-  .ct-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 150px;
-  }
+  .ct-card { display: none; }
   .ct-circle {
     width: 150px;
     height: 150px;
@@ -939,6 +936,90 @@ document.getElementById('pr_month').addEventListener('change', function() {
     color: #085041;
     font-weight: 600;
   }
+
+  /* Each task is a self-contained unit: name on top, circle below */
+  .ct-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px 24px;
+    justify-content: center;
+  }
+
+  .ct-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+  }
+
+  .ct-task-date {
+    font-size: 11px;
+    font-weight: 600;
+    color: #2e7dce;
+    margin-bottom: 3px;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+
+  .ct-assignee {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a2e44;
+    text-transform: capitalize;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .ct-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #FF8C00;
+    border: 3px solid #2e7dce;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(255,140,0,0.3);
+    position: relative;
+  }
+
+  .ct-task-text {
+    font-size: 15px;
+    font-weight: 800;
+    color: #000;
+    text-align: center;
+    line-height: 1.4;
+    text-transform: capitalize;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ct-badge {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2e7dce;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .ct-remarks {
+    margin-top: 18px;
+    font-size: 11px;
+    color: #7a8fa6;
+    text-align: center;
+    max-width: 148px;
+    line-height: 1.4;
+    font-style: italic;
+  }
 </style>
 
 <!-- inject the tasks screen HTML right before the card closes -->
@@ -1018,11 +1099,8 @@ const CT_EXCEL_URL = "https://playistobadminton.github.io/Playisto-Standard-Proc
       `<div class="ct-pill">${assignees.length} staff</div>` +
       (categories.length ? `<div class="ct-pill">${categories.length} categories</div>` : "");
 
-    const wrap       = document.createElement("div");
-    const namesRow   = document.createElement("div");
-    namesRow.className = "ct-names-row";
-    const circlesRow = document.createElement("div");
-    circlesRow.className = "ct-circles-row";
+    const wrap = document.createElement("div");
+    wrap.className = "ct-grid";
 
     tasks.forEach(t => {
       const task     = String(t["Task"]        || "").trim();
@@ -1031,25 +1109,20 @@ const CT_EXCEL_URL = "https://playistobadminton.github.io/Playisto-Standard-Proc
       const remarks  = String(t["Remarks"]     || "").trim();
       const date     = String(t["Date"]        || "").trim();
 
-      const nameCell = document.createElement("div");
-      nameCell.className = "ct-name-cell";
-      nameCell.innerHTML = `<div class="ct-task-date">${date}</div><div class="ct-assignee">${assignee}</div>`;
-      namesRow.appendChild(nameCell);
-
-      const card = document.createElement("div");
-      card.className = "ct-card";
-      card.innerHTML = `
+      const unit = document.createElement("div");
+      unit.className = "ct-unit";
+      unit.innerHTML = `
+        <div class="ct-task-date">${date}</div>
+        <div class="ct-assignee">${assignee}</div>
         <div class="ct-circle">
           <div class="ct-task-text">${task}</div>
           ${category ? `<div class="ct-badge">${category}</div>` : ""}
         </div>
         ${remarks ? `<div class="ct-remarks">${remarks}</div>` : ""}
       `;
-      circlesRow.appendChild(card);
+      wrap.appendChild(unit);
     });
 
-    wrap.appendChild(namesRow);
-    wrap.appendChild(circlesRow);
     contentEl.innerHTML = "";
     contentEl.appendChild(wrap);
   }
